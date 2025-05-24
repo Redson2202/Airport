@@ -8,19 +8,22 @@ import cores.models.Flight;
 import cores.models.Location;
 import cores.models.Passenger;
 import cores.models.Plane;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Storage {
 
     private static Storage instance;
-    private Map<Long, Passenger> passengers;
-    private Map<String, Plane> planes;
-    private Map<String, Location> locations;
-    private Map<String, Flight> flights;
+    private static ArrayList<Passenger> passengers;
+    private static ArrayList<Plane> planes;
+    private static ArrayList<Location> locations;
+    private static ArrayList<Flight> flights;
 
     private Storage() {
-        passengers = new HashMap<>();
+        Storage.passengers = new ArrayList();
+        Storage.planes = new ArrayList();
+        Storage.locations = new ArrayList();
+        Storage.flights = new ArrayList();
     }
 
     public static Storage getInstance() {
@@ -32,77 +35,105 @@ public class Storage {
 
     //Añadir pasagero
     public boolean addPassenger(Passenger passenger) {
-        if (passengers.containsKey(passenger.getId())) {
-            return false; //Ya existe el pasagero
+        for (Passenger p : Storage.passengers) {
+            if (p.getId() == passenger.getId()) {
+                return false; // Ya existe ese pasajero
+            }
         }
-        passengers.put(passenger.getId(), passenger);
+        Storage.passengers.add(passenger);
         return true;
     }
 
     //Obtener pasajero por ID
     public Passenger getPassengerById(long id) {
-        return passengers.get(id);
+        for (Passenger passenger : Storage.passengers) {
+            if (passenger.getId() == id) {
+                return passenger;
+            }
+        }
+        return null;
     }
 
     //Obtener todos los pasajeros
-    public Map<Long, Passenger> getAllPassengers() {
-        return new HashMap<>(passengers); //para evitar errores :p
+    public static ArrayList<Passenger> getAllPassengers() {
+        return passengers;
     }
 
     // Añadir Avion
     public boolean addPlane(Plane plane) {
-        if (planes.containsKey(plane.getId())) {
-            return false; // Ya existe este avion
+        for (Plane pl : Storage.planes) {
+            if (pl.getId().equals(plane.getId())) {
+                return false; // Ya existe este avion
+            }
         }
-        planes.put(plane.getId(), plane);
+        Storage.planes.add(plane);
         return true;
     }
 
     //Obtener Avion por ID
     public Plane getPlaneById(String id) {
-        return planes.get(id);
+        for (Plane plane : Storage.planes) {
+            if (plane.getId().equals(id)) {
+                return plane;
+            }
+        }
+        return null;
     }
 
     //Obtener todos los Aviones
-    public Map<String, Plane> getAllPlanes() {
-        return new HashMap<>(planes); // evitar errores :p
+    public static List<Plane> getAllPlanes() {
+        return planes;
     }
 
     // Añadir Aeropuerto
     public boolean addLocation(Location location) {
-        if (locations.containsKey(location.getAirportId())) {
-            return false; // ya existe este aeropuerto
+        for (Location l : Storage.locations) {
+            if (l.getAirportId().equals(location.getAirportId())) {
+                return false; // Ya existe este avion
+            }
         }
-        locations.put(location.getAirportId(), location);
+        Storage.locations.add(location);
         return true;
     }
 
     // Obtener aeropuerto por ID
     public Location getAirportById(String id) {
-        return locations.get(id);
+        for (Location location : Storage.locations) {
+            if (location.getAirportId().equals(id)) {
+                return location;
+            }
+        }
+        return null;
     }
 
     //Obtener todos los aeropuertos
-    public Map<String, Location> getAllLocations() {
-        return new HashMap<>(locations);
+    public static List<Location> getAllLocations() {
+        return locations;
     }
 
     //Añadir vuelo
     public boolean addFlight(Flight flight) {
-        if (flights.containsKey(flight.getId())) {
-            return false;// ya existe este vuelo
+        for (Flight f : Storage.flights) {
+            if (f.getId().equals(flight.getId())) {
+                return false; // Ya existe este avion
+            }
         }
-        flights.put(flight.getId(), flight);
+        Storage.flights.add(flight);
         return true;
     }
 
     //Obtener vuelo por id
     public Flight getFlightById(String id) {
-        return flights.get(id);
+        for (Flight flight : Storage.flights) {
+            if (flight.getId().equals(id)) {
+                return flight;
+            }
+        }
+        return null;
     }
 
     //Obtener todos los vuelos
-    public Map<String, Flight> getAllFlights() {
-        return new HashMap<>(flights);
+    public static List<Flight> getAllFlights() {
+        return flights;
     }
 }
