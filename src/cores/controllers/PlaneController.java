@@ -33,7 +33,7 @@ public class PlaneController {
             if (model == null || model.trim().isEmpty() || id == null || id.trim().isEmpty() || brand == null || brand.trim().isEmpty() || maxcapacity == null || maxcapacity.trim().isEmpty() || airline == null || airline.trim().isEmpty()) {
                 return new Response("Todos los campos deben estar llenos para hacer el registro", Status.BAD_REQUEST);
             }
-
+            //Agregando el nuevo avion
             Plane plane = new Plane(id, brand, model, maxCapacity, airline);
             storage.addPlane(plane);
             return new Response("Avion registrado correctamente", Status.CREATED);
