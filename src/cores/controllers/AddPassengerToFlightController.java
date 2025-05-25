@@ -17,19 +17,23 @@ import cores.utils.Status;
 public class AddPassengerToFlightController {
 
     public static Response AgregarPasejorAVuelo(long passengerId, String flightId) {
-        Storage storage = Storage.getInstance();
-        //Validar la existencia del pasajero
-        Passenger passenger = storage.getPassengerById(passengerId);
-        if (passenger == null) {
-            return new Response("Pasejero no encontrado", Status.NOT_FOUND);
+        try {
+            Storage storage = Storage.getInstance();
+            //Validar la existencia del pasajero
+            Passenger passenger = storage.getPassengerById(passengerId);
+            if (passenger == null) {
+                return new Response("Pasejero no encontrado", Status.NOT_FOUND);
+            }
+            //Validar la existencia del vuelo
+            Flight flight = storage.getFlightById(flightId);
+            if (flight == null) {
+                return new Response("Vuelo no encontrado", Status.NOT_FOUND);
+            }
+            flight.addPassenger(passenger);
+            passenger.addFlight(flight);
+            return new Response("Pasajero agregado al vuelo exitosamente", Status.OK);
+        } catch (Exception ex) {
+            return new Response("Unexpected error", Status.INTERNAL_SERVER_ERROR);
         }
-        //Validar la existencia del vuelo
-        Flight flight = storage.getFlightById(flightId);
-        if (flight == null) {
-            return new Response("Vuelo no encontrado", Status.NOT_FOUND);
-        }
-        flight.addPassenger(passenger);
-        passenger.addFlight(flight);
-        return new Response("Pasajero agregado al vuelo exitosamente", Status.OK);
     }
 }
