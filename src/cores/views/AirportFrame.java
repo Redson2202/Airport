@@ -33,22 +33,11 @@ public class AirportFrame extends javax.swing.JFrame {
      * Creates new form AirportFrame
      */
     private int x, y;
-    /*private ArrayList<Passenger> passengers;
-    private ArrayList<Plane> planes;
-    private ArrayList<Location> locations;
-    private ArrayList<Flight> flights;*/
     
     public AirportFrame() {
         initComponents();
-        
-        /*this.passengers = new ArrayList<>();
-        this.planes = new ArrayList<>();
-        this.locations = new ArrayList<>();
-        this.flights = new ArrayList<>();*/
-        
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
-        
         this.generateMonths();
         this.generateDays();
         this.generateHours();
@@ -1472,9 +1461,6 @@ public class AirportFrame extends javax.swing.JFrame {
             PassengerPhone.setText("");
             CountryPassenger.setText("");
         }
-        
-        //LocalDate birthDate = LocalDate.of(year, month, day);
-        //this.passengers.add(new Passenger(id, firstname, lastname, birthDate, phoneCode, phone, country));
         this.userSelect.addItem("" + id);
     }//GEN-LAST:event_RegisterPassengerActionPerformed
 
@@ -1501,7 +1487,6 @@ public class AirportFrame extends javax.swing.JFrame {
             PlaneMaxCapacity.setText("");
             PlaneAirline.setText("");
         }
-        //this.planes.add(new Plane(id, brand, model, maxCapacity, airline));
 
         this.PlaneList.addItem(id);
     }//GEN-LAST:event_CreatePlaneActionPerformed
@@ -1532,7 +1517,6 @@ public class AirportFrame extends javax.swing.JFrame {
             AirportLongitude.setText("");
         }
 
-        //this.locations.add(new Location(id, name, city, country, latitude, longitude));
         this.DepartureList.addItem(id);
         this.ArrivalList.addItem(id);
         this.ScaleList.addItem(id);
@@ -1570,6 +1554,7 @@ public class AirportFrame extends javax.swing.JFrame {
             DepartureList.setSelectedIndex(0);
             ArrivalList.setSelectedIndex(0);
             DepartureDateYear.setText("");
+            ScaleList.setSelectedIndex(0);
             DEPARTUREMONTH.setSelectedIndex(0);
             DEPARTUREDAY.setSelectedIndex(0);
             HOURDEPARTURE.setSelectedIndex(0);
@@ -1579,36 +1564,8 @@ public class AirportFrame extends javax.swing.JFrame {
             SCALEHOUR.setSelectedIndex(0);
             SCALEMINUTE.setSelectedIndex(0);
         }
-        //LocalDateTime departureDate = LocalDateTime.of(year, month, day, hour, minutes);
-
-        /*Plane plane = null;
-        for (Plane p : this.planes) {
-            if (planeId.equals(p.getId())) {
-                plane = p;
-            }
-        }*/
-
- /*Location departure = null;
-        Location arrival = null;
-        Location scale = null;
-        for (Location location : this.locations) {
-            if (departureLocationId.equals(location.getAirportId())) {
-                departure = location;
-            }
-            if (arrivalLocationId.equals(location.getAirportId())) {
-                arrival = location;
-            }
-            if (scaleLocationId.equals(location.getAirportId())) {
-                scale = location;
-            }
-        }
-
-        if (scale == null) {
-            this.flights.add(new Flight(id, plane, departure, arrival, departureDate, hoursDurationsArrival, minutesDurationsArrival));
-        } else {
-            this.flights.add(new Flight(id, plane, departure, scale, arrival, departureDate, hoursDurationsArrival, minutesDurationsArrival, hoursDurationsScale, minutesDurationsScale));
-        }*/
         this.FlightaddList.addItem(id);
+        this.DelayFlightId.addItem(id);
     }//GEN-LAST:event_CreateFlightActionPerformed
 
     private void UPDATEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UPDATEActionPerformed
@@ -1642,20 +1599,6 @@ public class AirportFrame extends javax.swing.JFrame {
             PassengerUpdPhone.setText("");
             PassengerUpdCountry.setText("");
         }
-
-        /*Passenger passenger = null;
-        for (Passenger p : this.passengers) {
-            if (p.getId() == id) {
-                passenger = p;
-            }
-        }
-
-        passenger.setFirstname(firstname);
-        passenger.setLastname(lastname);
-        passenger.setBirthDate(birthDate);
-        passenger.setCountryPhoneCode(phoneCode);
-        passenger.setPhone(phone);
-        passenger.setCountry(country);*/
     }//GEN-LAST:event_UPDATEActionPerformed
 
     private void ADDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ADDActionPerformed
@@ -1676,24 +1619,6 @@ public class AirportFrame extends javax.swing.JFrame {
             AddPassengerId.setText("");
             FlightaddList.setSelectedIndex(0);
         }
-
-        /* Passenger passenger = null;
-        Flight flight = null;
-
-        for (Passenger p : this.passengers) {
-            if (p.getId() == passengerId) {
-                passenger = p;
-            }
-        }
-
-        for (Flight f : this.flights) {
-            if (flightId.equals(f.getId())) {
-                flight = f;
-            }
-        }
-
-        passenger.addFlight(flight);
-        flight.addPassenger(passenger);*/
     }//GEN-LAST:event_ADDActionPerformed
 
     private void DelaybuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DelaybuttonActionPerformed
@@ -1715,28 +1640,11 @@ public class AirportFrame extends javax.swing.JFrame {
             DelayHour.setSelectedIndex(0);
             Delayminutes.setSelectedIndex(0);
         }
-        /* Flight flight = null;
-        for (Flight f : this.flights) {
-            if (flightId.equals(f.getId())) {
-                flight = f;
-            }
-        }
-
-        flight.delay(hours, minutes);*/
     }//GEN-LAST:event_DelaybuttonActionPerformed
 
     private void REFRESHFLIGHTSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_REFRESHFLIGHTSActionPerformed
         // TODO add your handling code here:
         long passengerId = Long.parseLong(userSelect.getItemAt(userSelect.getSelectedIndex()));
-        
-        /*Passenger passenger = null;
-      
-        for (Passenger p : this.passengers) {
-            if (p.getId() == passengerId) {
-                passenger = p;
-            }
-        }*/
-        
         ArrayList<Flight> flights = InfoController.getAllPassengerFlightsByDepartureDate(passengerId);
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
