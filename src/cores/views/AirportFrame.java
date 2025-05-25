@@ -1,15 +1,24 @@
-
 package cores.views;
 
 import cores.models.Location;
 import cores.models.Passenger;
 import cores.models.Flight;
 import cores.models.Plane;
+import cores.controllers.PassengerController;
 import com.formdev.flatlaf.FlatDarkLaf;
+import cores.controllers.PlaneController;
+import cores.controllers.AddPassengerToFlightController;
+import cores.controllers.DelayFlightController;
+import cores.controllers.FlightController;
+import cores.controllers.InfoController;
+import cores.controllers.LocationController;
+import cores.controllers.UpdatePassenger;
+import cores.utils.Response;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 
@@ -33,7 +42,7 @@ public class AirportFrame extends javax.swing.JFrame {
 
         this.passengers = new ArrayList<>();
         this.planes = new ArrayList<>();
-        this.locations = new ArrayList<>();
+                        this.locations = new ArrayList<>();
         this.flights = new ArrayList<>();
 
         this.setBackground(new Color(0, 0, 0, 0));
@@ -57,7 +66,7 @@ public class AirportFrame extends javax.swing.JFrame {
 
     private void generateMonths() {
         for (int i = 1; i < 13; i++) {
-            MONTH.addItem("" + i);
+            PassengerMONTH.addItem("" + i);
             DEPARTUREMONTH.addItem("" + i);
             UpdBirthMonth.addItem("" + i);
         }
@@ -65,7 +74,7 @@ public class AirportFrame extends javax.swing.JFrame {
 
     private void generateDays() {
         for (int i = 1; i < 32; i++) {
-            DAY.addItem("" + i);
+            PassengerDAY.addItem("" + i);
             DEPARTUREDAY.addItem("" + i);
             UpdBirthDay.addItem("" + i);
         }
@@ -122,10 +131,10 @@ public class AirportFrame extends javax.swing.JFrame {
         LabelBirthdate = new javax.swing.JLabel();
         PassengerLastname = new javax.swing.JTextField();
         LabelPhone = new javax.swing.JLabel();
-        MONTH = new javax.swing.JComboBox<>();
+        PassengerMONTH = new javax.swing.JComboBox<>();
         PassengerFirstname = new javax.swing.JTextField();
         LabelBirthDate2 = new javax.swing.JLabel();
-        DAY = new javax.swing.JComboBox<>();
+        PassengerDAY = new javax.swing.JComboBox<>();
         RegisterPassenger = new javax.swing.JButton();
         PlaneRegistration = new javax.swing.JPanel();
         LabelPlaneId = new javax.swing.JLabel();
@@ -373,9 +382,9 @@ public class AirportFrame extends javax.swing.JFrame {
         LabelPhone.setText("-");
         PassengerRegistration.add(LabelPhone, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 340, 30, -1));
 
-        MONTH.setFont(new java.awt.Font("Yu Gothic UI", 0, 18)); // NOI18N
-        MONTH.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Month" }));
-        PassengerRegistration.add(MONTH, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 280, -1, -1));
+        PassengerMONTH.setFont(new java.awt.Font("Yu Gothic UI", 0, 18)); // NOI18N
+        PassengerMONTH.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Month" }));
+        PassengerRegistration.add(PassengerMONTH, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 280, -1, -1));
 
         PassengerFirstname.setFont(new java.awt.Font("Yu Gothic UI", 0, 18)); // NOI18N
         PassengerRegistration.add(PassengerFirstname, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 160, 130, -1));
@@ -384,9 +393,9 @@ public class AirportFrame extends javax.swing.JFrame {
         LabelBirthDate2.setText("-");
         PassengerRegistration.add(LabelBirthDate2, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 280, 30, -1));
 
-        DAY.setFont(new java.awt.Font("Yu Gothic UI", 0, 18)); // NOI18N
-        DAY.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Day" }));
-        PassengerRegistration.add(DAY, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 280, -1, -1));
+        PassengerDAY.setFont(new java.awt.Font("Yu Gothic UI", 0, 18)); // NOI18N
+        PassengerDAY.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Day" }));
+        PassengerRegistration.add(PassengerDAY, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 280, -1, -1));
 
         RegisterPassenger.setFont(new java.awt.Font("Yu Gothic UI", 0, 18)); // NOI18N
         RegisterPassenger.setText("Register");
@@ -1437,15 +1446,32 @@ public class AirportFrame extends javax.swing.JFrame {
         String firstname = PassengerFirstname.getText();
         String lastname = PassengerLastname.getText();
         int year = Integer.parseInt(PassengerBornYear.getText());
-        int month = Integer.parseInt(MONTH.getItemAt(MONTH.getSelectedIndex()));
-        int day = Integer.parseInt(DAY.getItemAt(DAY.getSelectedIndex()));
+        int month = Integer.parseInt(PassengerMONTH.getItemAt(PassengerMONTH.getSelectedIndex()));
+        int day = Integer.parseInt(PassengerDAY.getItemAt(PassengerDAY.getSelectedIndex()));
         int phoneCode = Integer.parseInt(CountryCode.getText());
         long phone = Long.parseLong(PassengerPhone.getText());
         String country = CountryPassenger.getText();
 
-        LocalDate birthDate = LocalDate.of(year, month, day);
+        Response response = PassengerController.RegistrarPasajero(id, firstname, lastname, year, month, day, phoneCode, phone, country);
 
-        this.passengers.add(new Passenger(id, firstname, lastname, birthDate, phoneCode, phone, country));
+        if (response.getStatus() >= 500) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.ERROR_MESSAGE);
+        } else if (response.getStatus() >= 400) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.WARNING_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Response Message", JOptionPane.INFORMATION_MESSAGE);
+
+            PassengerId.setText("");
+            PassengerFirstname.setText("");
+            PassengerLastname.setText("");
+            PassengerBornYear.setText("");
+            CountryCode.setText("");
+            PassengerPhone.setText("");
+            CountryPassenger.setText("");
+        }
+
+        //LocalDate birthDate = LocalDate.of(year, month, day);
+        //this.passengers.add(new Passenger(id, firstname, lastname, birthDate, phoneCode, phone, country));
         this.userSelect.addItem("" + id);
     }//GEN-LAST:event_RegisterPassengerActionPerformed
 
@@ -1457,7 +1483,22 @@ public class AirportFrame extends javax.swing.JFrame {
         int maxCapacity = Integer.parseInt(PlaneMaxCapacity.getText());
         String airline = PlaneAirline.getText();
 
-        this.planes.add(new Plane(id, brand, model, maxCapacity, airline));
+        Response response = PlaneController.registrarAvion(id, brand, model, maxCapacity, airline);
+
+        if (response.getStatus() >= 500) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.ERROR_MESSAGE);
+        } else if (response.getStatus() >= 400) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.WARNING_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Response Message", JOptionPane.INFORMATION_MESSAGE);
+
+            PlaneId.setText("");
+            PlaneBrand.setText("");
+            PlaneModel.setText("");
+            PlaneMaxCapacity.setText("");
+            PlaneAirline.setText("");
+        }
+        //this.planes.add(new Plane(id, brand, model, maxCapacity, airline));
 
         this.PlaneList.addItem(id);
     }//GEN-LAST:event_CreatePlaneActionPerformed
@@ -1471,8 +1512,24 @@ public class AirportFrame extends javax.swing.JFrame {
         double latitude = Double.parseDouble(AirportLatitude.getText());
         double longitude = Double.parseDouble(AirportLongitude.getText());
 
-        this.locations.add(new Location(id, name, city, country, latitude, longitude));
+        Response response = LocationController.RegistrarAeropuerto(id, name, city, country, latitude, longitude);
 
+        if (response.getStatus() >= 500) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.ERROR_MESSAGE);
+        } else if (response.getStatus() >= 400) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.WARNING_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Response Message", JOptionPane.INFORMATION_MESSAGE);
+
+            AirportId.setText("");
+            AirportName.setText("");
+            AirportCity.setText("");
+            AirportCountry.setText("");
+            AirportLatitude.setText("");
+            AirportLongitude.setText("");
+        }
+
+        //this.locations.add(new Location(id, name, city, country, latitude, longitude));
         this.DepartureList.addItem(id);
         this.ArrivalList.addItem(id);
         this.ScaleList.addItem(id);
@@ -1495,16 +1552,40 @@ public class AirportFrame extends javax.swing.JFrame {
         int hoursDurationsScale = Integer.parseInt(SCALEHOUR.getItemAt(SCALEHOUR.getSelectedIndex()));
         int minutesDurationsScale = Integer.parseInt(SCALEMINUTE.getItemAt(SCALEMINUTE.getSelectedIndex()));
 
-        LocalDateTime departureDate = LocalDateTime.of(year, month, day, hour, minutes);
+        Response response = FlightController.RegistrarVuelo(id, planeId, departureLocationId, scaleLocationId, arrivalLocationId, year, month, day, hour, minutes, hoursDurationsArrival, hoursDurationsScale, minutesDurationsArrival, minutesDurationsScale);
+        
+        if (response.getStatus() >= 500) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.ERROR_MESSAGE);
+        } else if (response.getStatus() >= 400) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.WARNING_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Response Message", JOptionPane.INFORMATION_MESSAGE);
 
-        Plane plane = null;
+            FlightId.setText("");
+            PlaneId.setText("");
+            //PlaneList.setText("");
+            //DepartureList
+            //ArrivalList
+            DepartureDateYear.setText("");
+           //DEPARTUREMONTH
+           //DEPARTUREDAY
+           //HOURDEPARTURE
+           //MINUTEDEPARTURE
+           //ARRIVALHOUR
+           //ARRIVALMINUTE
+           //SCALEHOUR
+           //SCALEMINUTE
+        }
+        //LocalDateTime departureDate = LocalDateTime.of(year, month, day, hour, minutes);
+
+        /*Plane plane = null;
         for (Plane p : this.planes) {
             if (planeId.equals(p.getId())) {
                 plane = p;
             }
-        }
+        }*/
 
-        Location departure = null;
+        /*Location departure = null;
         Location arrival = null;
         Location scale = null;
         for (Location location : this.locations) {
@@ -1523,7 +1604,7 @@ public class AirportFrame extends javax.swing.JFrame {
             this.flights.add(new Flight(id, plane, departure, arrival, departureDate, hoursDurationsArrival, minutesDurationsArrival));
         } else {
             this.flights.add(new Flight(id, plane, departure, scale, arrival, departureDate, hoursDurationsArrival, minutesDurationsArrival, hoursDurationsScale, minutesDurationsScale));
-        }
+        }*/
 
         this.FlightaddList.addItem(id);
     }//GEN-LAST:event_CreateFlightActionPerformed
@@ -1534,15 +1615,32 @@ public class AirportFrame extends javax.swing.JFrame {
         String firstname = PassengerUpdFirstname.getText();
         String lastname = PassengerUpdLastname.getText();
         int year = Integer.parseInt(PassengerUpdBirthYear.getText());
-        int month = Integer.parseInt(MONTH.getItemAt(UpdBirthMonth.getSelectedIndex()));
-        int day = Integer.parseInt(DAY.getItemAt(UpdBirthDay.getSelectedIndex()));
+        int month = Integer.parseInt(PassengerMONTH.getItemAt(UpdBirthMonth.getSelectedIndex()));
+        int day = Integer.parseInt(PassengerDAY.getItemAt(UpdBirthDay.getSelectedIndex()));
         int phoneCode = Integer.parseInt(PassengerUpdPhoneCode.getText());
         long phone = Long.parseLong(PassengerUpdPhone.getText());
         String country = PassengerUpdCountry.getText();
 
-        LocalDate birthDate = LocalDate.of(year, month, day);
+        Response response = UpdatePassenger.updatePassenger(id,firstname,lastname,year,month,day,phoneCode, phone,country);
 
-        Passenger passenger = null;
+        if (response.getStatus() >= 500) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.ERROR_MESSAGE);
+        } else if (response.getStatus() >= 400) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.WARNING_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Response Message", JOptionPane.INFORMATION_MESSAGE);
+
+            UpdatedId.setText("");
+            PassengerUpdFirstname.setText("");
+            PassengerUpdLastname.setText("");
+            PassengerUpdBirthYear.setText("");
+            //PassengerMONTH
+            //PassengerDAY
+            PassengerUpdPhoneCode.setText("");
+            PassengerUpdCountry.setText("");
+        }
+
+        /*Passenger passenger = null;
         for (Passenger p : this.passengers) {
             if (p.getId() == id) {
                 passenger = p;
@@ -1554,7 +1652,7 @@ public class AirportFrame extends javax.swing.JFrame {
         passenger.setBirthDate(birthDate);
         passenger.setCountryPhoneCode(phoneCode);
         passenger.setPhone(phone);
-        passenger.setCountry(country);
+        passenger.setCountry(country);*/
     }//GEN-LAST:event_UPDATEActionPerformed
 
     private void ADDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ADDActionPerformed
@@ -1691,7 +1789,6 @@ public class AirportFrame extends javax.swing.JFrame {
     private javax.swing.JTextField CountryPassenger;
     private javax.swing.JButton CreateFlight;
     private javax.swing.JButton CreatePlane;
-    private javax.swing.JComboBox<String> DAY;
     private javax.swing.JComboBox<String> DEPARTUREDAY;
     private javax.swing.JComboBox<String> DEPARTUREMONTH;
     private javax.swing.JPanel DelayFlight;
@@ -1757,11 +1854,12 @@ public class AirportFrame extends javax.swing.JFrame {
     private javax.swing.JLabel Labelupdphone2;
     private javax.swing.JScrollPane ListOfFlightsPassenger;
     private javax.swing.JComboBox<String> MINUTEDEPARTURE;
-    private javax.swing.JComboBox<String> MONTH;
     private javax.swing.JTextField PassengerBornYear;
+    private javax.swing.JComboBox<String> PassengerDAY;
     private javax.swing.JTextField PassengerFirstname;
     private javax.swing.JTextField PassengerId;
     private javax.swing.JTextField PassengerLastname;
+    private javax.swing.JComboBox<String> PassengerMONTH;
     private javax.swing.JTextField PassengerPhone;
     private javax.swing.JPanel PassengerRegistration;
     private javax.swing.JTextField PassengerUpdBirthYear;
