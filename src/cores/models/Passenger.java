@@ -68,7 +68,7 @@ public class Passenger {
     }
 
     public ArrayList<Flight> getFlights() {
-        return flights;
+        return flights;         
     }
 
     public void setFirstname(String firstname) {

@@ -18,12 +18,14 @@ public class Storage {
     private static ArrayList<Plane> planes;
     private static ArrayList<Location> locations;
     private static ArrayList<Flight> flights;
+    private static ArrayList<Flight> passengerflights;
 
     private Storage() {
         Storage.passengers = new ArrayList();
         Storage.planes = new ArrayList();
         Storage.locations = new ArrayList();
         Storage.flights = new ArrayList();
+        Storage.passengerflights = new ArrayList();
     }
 
     public static Storage getInstance() {
@@ -81,7 +83,7 @@ public class Storage {
     }
 
     //Obtener todos los Aviones
-    public static List<Plane> getAllPlanes() {
+    public static ArrayList<Plane> getAllPlanes() {
         return planes;
     }
 
@@ -107,7 +109,7 @@ public class Storage {
     }
 
     //Obtener todos los aeropuertos
-    public static List<Location> getAllLocations() {
+    public static ArrayList<Location> getAllLocations() {
         return locations;
     }
 
@@ -133,7 +135,15 @@ public class Storage {
     }
 
     //Obtener todos los vuelos
-    public static List<Flight> getAllFlights() {
+    public static ArrayList<Flight> getAllFlights() {
         return flights;
+    }
+
+    //Obtener vuelos del pasajero
+    public static ArrayList<Flight> getPassengerFlights(long id) {
+        Storage storage = Storage.getInstance();
+        Passenger passenger = storage.getPassengerById(id);
+        passengerflights = passenger.getFlights();
+        return passengerflights;
     }
 }
