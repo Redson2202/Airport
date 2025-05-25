@@ -1470,8 +1470,8 @@ public class AirportFrame extends javax.swing.JFrame {
             CountryPassenger.setText("");
         }
 
-        //LocalDate birthDate = LocalDate.of(year, month, day);
-        //this.passengers.add(new Passenger(id, firstname, lastname, birthDate, phoneCode, phone, country));
+        LocalDate birthDate = LocalDate.of(year, month, day);
+        this.passengers.add(new Passenger(id, firstname, lastname, birthDate, phoneCode, phone, country));
         this.userSelect.addItem("" + id);
     }//GEN-LAST:event_RegisterPassengerActionPerformed
 
@@ -1637,6 +1637,7 @@ public class AirportFrame extends javax.swing.JFrame {
             //PassengerMONTH
             //PassengerDAY
             PassengerUpdPhoneCode.setText("");
+            PassengerUpdPhone.setText("");
             PassengerUpdCountry.setText("");
         }
 
@@ -1657,10 +1658,25 @@ public class AirportFrame extends javax.swing.JFrame {
 
     private void ADDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ADDActionPerformed
         // TODO add your handling code here:
+        
+
         long passengerId = Long.parseLong(AddPassengerId.getText());
         String flightId = FlightaddList.getItemAt(FlightaddList.getSelectedIndex());
 
-        Passenger passenger = null;
+        Response response = AddPassengerToFlightController.AgregarPasejorAVuelo(passengerId, flightId);
+        
+        if (response.getStatus() >= 500) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.ERROR_MESSAGE);
+        } else if (response.getStatus() >= 400) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.WARNING_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Response Message", JOptionPane.INFORMATION_MESSAGE);
+
+            AddPassengerId.setText("");
+            //FlightaddList
+        }
+        
+       /* Passenger passenger = null;
         Flight flight = null;
 
         for (Passenger p : this.passengers) {
@@ -1676,7 +1692,7 @@ public class AirportFrame extends javax.swing.JFrame {
         }
 
         passenger.addFlight(flight);
-        flight.addPassenger(passenger);
+        flight.addPassenger(passenger);*/
     }//GEN-LAST:event_ADDActionPerformed
 
     private void DelaybuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DelaybuttonActionPerformed
@@ -1684,15 +1700,28 @@ public class AirportFrame extends javax.swing.JFrame {
         String flightId = DelayFlightId.getItemAt(DelayFlightId.getSelectedIndex());
         int hours = Integer.parseInt(DelayHour.getItemAt(DelayHour.getSelectedIndex()));
         int minutes = Integer.parseInt(Delayminutes.getItemAt(Delayminutes.getSelectedIndex()));
+        
+        Response response = DelayFlightController.Delayflight(flightId, hours, minutes);
 
-        Flight flight = null;
+        if (response.getStatus() >= 500) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.ERROR_MESSAGE);
+        } else if (response.getStatus() >= 400) {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Error " + response.getStatus(), JOptionPane.WARNING_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, response.getMessage(), "Response Message", JOptionPane.INFORMATION_MESSAGE);
+
+            //DelayFlightId
+            //DelayHour
+            //Delayminutes
+        }
+       /* Flight flight = null;
         for (Flight f : this.flights) {
             if (flightId.equals(f.getId())) {
                 flight = f;
             }
         }
 
-        flight.delay(hours, minutes);
+        flight.delay(hours, minutes);*/
     }//GEN-LAST:event_DelaybuttonActionPerformed
 
     private void REFRESHFLIGHTSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_REFRESHFLIGHTSActionPerformed

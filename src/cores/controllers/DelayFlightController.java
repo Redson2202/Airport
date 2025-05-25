@@ -25,7 +25,7 @@ public class DelayFlightController {
                 return new Response("Id no valido", Status.BAD_REQUEST);
             }
             //Validar que las horas/minutos de retraso sean >0
-            if (delayhours < 0 || delayminutes < 0 || (delayhours == 0 & delayminutes == 0)) {
+            if (delayhours <= 0 || delayminutes <= 0 ) {
                 return new Response("El tiempo de retraso debe ser mayor de 00:00", Status.BAD_REQUEST);
             }
             //Validar que el vuelo exista
@@ -33,10 +33,7 @@ public class DelayFlightController {
             if (flight == null) {
                 return new Response("Vuelo no encontrado", Status.NOT_FOUND);
             }
-            LocalDateTime orignalDeparture = flight.getDepartureDate();
-            Duration delay = Duration.ofHours(delayhours).plusMinutes(delayminutes);
-            LocalDateTime newDeparture = orignalDeparture.plus(delay);
-            flight.setDepartureDate(newDeparture);
+            flight.delay(delayhours, delayminutes);
             return new Response("Vuelo retrasado correctamente", Status.OK);
         } catch (Exception ex) {
             return new Response("Unexpected error", Status.INTERNAL_SERVER_ERROR);

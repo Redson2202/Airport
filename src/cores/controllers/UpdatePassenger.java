@@ -10,8 +10,6 @@ import cores.utils.Response;
 import cores.utils.Status;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  *
@@ -21,17 +19,16 @@ public class UpdatePassenger {
 
     public static Response updatePassenger(long PassengerId, String firstname, String lastname, int year, int month, int day, int phoneCode, long phone, String country) {
         try {
-            String idString, phonecodeString, phoneString;
+            String phonecodeString, phoneString;
             Storage storage = Storage.getInstance();
             Passenger passenger = storage.getPassengerById(PassengerId);
-            Passenger updatedPassenger = null;
 
             //Validando si el pasajero existe/valido
             if (passenger == null) {
                 return new Response("Pasajero no encontrado", Status.NOT_FOUND);
             }
             //Validando que el nombre no este vacio
-            if (updatedPassenger.getFirstname() == null || updatedPassenger.getLastname() == null) {
+            if (firstname == null || lastname== null) {
                 return new Response("El nombre/Apellido no pueden estar vacios", Status.BAD_REQUEST);
             }
             //Validar Fecha
@@ -65,7 +62,7 @@ public class UpdatePassenger {
                 return new Response("No puede quedar informacion vacia. Porfavor llene todos los espacios.", Status.BAD_REQUEST);
             }
             LocalDate parsedDate = LocalDate.of(year, month, day);
-            Passenger existingpassenger = storage.getPassengerById(updatedPassenger.getId());
+            Passenger existingpassenger = storage.getPassengerById(PassengerId);
             //Actualizar la informacion
             existingpassenger.setFirstname(firstname);
             existingpassenger.setLastname(lastname);
